@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Libre Baskerville' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body { font-family: 'Libre Baskerville'; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #daffcc; }
+        .weather-container { text-align: center; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        h1 {font-family: 'Libre Baskerville'; color: #000000; }
+        .weather-info { margin-top: 20px; }
+        .city { font-family:'Libre Baskerville'; font-size: 24px; font-weight: bold; }
+        .temperature { font-size: 32px; color: #527c5d; }
+        .condition { font-size: 20px; color: #dab200; }
+        .humidity { font-size: 18px; color: #3498db; }
+        input { padding: 10px; font-size: 16px; border-radius: 4px; border: 1px solid #ddd; width: 200px; margin-right: 10px; }
+        button { padding: 10px 20px; font-size: 16px; background-color: #2980b9; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="weather-container">
+        <h1>Azarias</h1>
+        <h1>Weather Application</h1>
+        <input type="text" id="cityName" placeholder="Enter city name" />
+        <button onclick="getWeather()">Get Weather</button>
+        <div id="weatherInfo" class="weather-info"></div>
+    </div>
+
+    <script>
+        const apiKey = '87e4a01bc43a830c5d33da31c4ab6350'; // Replace with OpenWeather API key
+
+        async function getWeather() {
+            const city = document.getElementById('cityName').value;
+            const weatherContainer = document.getElementById('weatherInfo');
+
+            if (!city) {
+                weatherContainer.innerHTML = '<p>Please enter a city name.</p>';
+                return;
+            }
+
+            // To set the temp to Celsius use 'units=metric'
+            // To set the temp to Fahrenheit use 'units=imperial'
+            // If you would like to use Kelvin, then you leave out the units parameter
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.cod === '404') {
+                    weatherContainer.innerHTML = '<p>City not found. Please try again.</p>';
+                } else {
+                    const cityName = data.name;
+                    const temperature = data.main.temp;
+                    const condition = data.weather[0].description;
+                    const humidity = data.main.humidity;
+
+                    weatherContainer.innerHTML = `
+                        <div class="city">${cityName}</div>
+                        <div class="temperature">${temperature}°F</div>
+                        <div class="condition">${condition}</div>
+                        <div class="humidity">Humidity: ${humidity}%</div>
+                    `;
+                }
+            } catch (error) {
+                weatherContainer.innerHTML = '<p>There was an error fetching the weather data.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
